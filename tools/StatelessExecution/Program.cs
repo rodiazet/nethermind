@@ -61,6 +61,8 @@ class Program
             return;
         }
 
+        Console.WriteLine("Start processsing block");
+
         Block suggestedBlock = new Block(suggestedBlockHeader,
             suggestedBlockForRpc.Transactions.Select(tx =>
                 serializer.Deserialize<TransactionForRpc>(((JsonElement)tx).GetRawText()).ToTransaction()), [],
@@ -73,6 +75,9 @@ class Program
 
         Block[] processed = blockProcessor.Process(witness.DecodedHeaders[0], [suggestedBlock],
             ProcessingOptions.ReadOnlyChain, NullBlockTracer.Instance);
+
+
+        Console.WriteLine("Block processsing finished");
 
         if (processed[0].Hash != suggestedBlock.Hash)
         {
