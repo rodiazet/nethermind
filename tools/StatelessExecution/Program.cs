@@ -61,7 +61,12 @@ class Program
             return;
         }
 
-        GC.TryStartNoGCRegion(100 * 1024 * 1024); // 100 MB
+        // Collect all generations of memory.
+        GC.Collect();
+        Console.WriteLine("Memory used after full collection:   {0:N0}", GC.GetTotalMemory(true));
+
+        System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.LowLatency;
+        Console.WriteLine(GC.TryStartNoGCRegion(100 * 1024 * 1024, 50 * 1024 * 1024, false)); // 100 MB, 50MB for large object heap
         Console.WriteLine("Start processsing block");
 
         Block suggestedBlock = new Block(suggestedBlockHeader,
@@ -77,10 +82,13 @@ class Program
         Block[] processed = blockProcessor.Process(witness.DecodedHeaders[0], [suggestedBlock],
             ProcessingOptions.ReadOnlyChain, NullBlockTracer.Instance);
 
-
         Console.WriteLine("Block processsing finished");
 
         GC.EndNoGCRegion();
+        
+        // GC.Collect();
+        Console.WriteLine("Memory used after full collection:   {0:N0}",
+                        GC.GetTotalMemory(true));
 
         if (processed[0].Hash != suggestedBlock.Hash)
         {
