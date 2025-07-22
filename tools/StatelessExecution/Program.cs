@@ -61,6 +61,7 @@ class Program
             return;
         }
 
+        GC.TryStartNoGCRegion(100 * 1024 * 1024); // 100 MB
         Console.WriteLine("Start processsing block");
 
         Block suggestedBlock = new Block(suggestedBlockHeader,
@@ -78,6 +79,8 @@ class Program
 
 
         Console.WriteLine("Block processsing finished");
+
+        GC.EndNoGCRegion();
 
         if (processed[0].Hash != suggestedBlock.Hash)
         {
